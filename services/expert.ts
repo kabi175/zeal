@@ -92,12 +92,13 @@ export async function saveNote(params: {
   isPrivate: boolean;
 }) {
   const supabase = createClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { error } = await supabase.from("notes").insert({
     expert_id: params.expertId,
     student_id: params.studentId,
     session_id: params.sessionId ?? null,
     content: params.content,
     is_private: params.isPrivate,
-  });
+  } as any);
   if (error) throw error;
 }

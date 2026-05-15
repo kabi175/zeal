@@ -59,26 +59,27 @@ export default function RegisterPage() {
 
     // 2. Get or create college
     let collegeId: string | null = null;
-    const { data: existingCollege } = await supabase
+    const existingResult = await supabase
       .from("colleges")
       .select("id")
       .ilike("name", data.college)
-      .returns<{ id: string }[]>()
       .single();
+    const existingCollege = existingResult.data as { id: string } | null;
 
     if (existingCollege) {
-      collegeId = (existingCollege as { id: string }).id;
+      collegeId = existingCollege.id;
     } else {
-      const { data: newCollege } = await supabase
+      const insertResult = await supabase
         .from("colleges")
-        .insert({ name: data.college })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .insert({ name: data.college } as any)
         .select("id")
-        .returns<{ id: string }[]>()
         .single();
-      collegeId = (newCollege as { id: string } | null)?.id ?? null;
+      collegeId = (insertResult.data as { id: string } | null)?.id ?? null;
     }
 
     // 3. Insert profile
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: profileError } = await supabase.from("profiles").insert({
       id: userId,
       full_name: data.full_name,
@@ -88,7 +89,7 @@ export default function RegisterPage() {
       college_id: collegeId,
       department: data.department,
       year_of_study: data.year_of_study,
-    });
+    } as any);
 
     if (profileError) {
       setServerError("Profile creation failed: " + profileError.message);
@@ -96,10 +97,8 @@ export default function RegisterPage() {
     }
 
     // 4. Assign student role
-    await supabase.from("user_roles").insert({
-      user_id: userId,
-      role: "student",
-    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await supabase.from("user_roles").insert({ user_id: userId, role: "student" } as any);
 
     setSuccess(true);
     setTimeout(() => {

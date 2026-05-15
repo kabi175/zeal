@@ -1,6 +1,7 @@
 "use server";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import type { AuthUser, Profile, AppRole } from "@/types/app";
 
 export async function signOut() {
   const supabase = await createClient();
@@ -8,18 +9,21 @@ export async function signOut() {
   redirect("/login");
 }
 
-export async function getAuthUser() {
+export async function getAuthUser(): Promise<AuthUser | null> {
   const supabase = await createClient();
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
   if (error || !user) return null;
 
-  const { data: profile } = await supabase
+  const profileResult = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
     .single();
 
-  const { data: roleData } = await supabase
+  const roleResult = await supabase
     .from("user_roles")
     .select("role")
     .eq("user_id", user.id)
@@ -28,7 +32,7 @@ export async function getAuthUser() {
   return {
     id: user.id,
     email: user.email ?? "",
-    profile: profile ?? null,
-    role: roleData?.role ?? null,
+    profile: (profileResult.data as Profile | null) ?? null,
+    role: ((roleResult.data as { role: AppRole } | null)?.role) ?? null,
   };
 }

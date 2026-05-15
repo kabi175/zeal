@@ -48,7 +48,7 @@ export function CounsellingPage({ user }: CounsellingPageProps) {
         .select("*, profiles!user_id(*)")
         .eq("is_active", true)
         .limit(10);
-      return data ?? [];
+      return (data as Array<{ user_id: string; [key: string]: unknown }>) ?? [];
     },
   });
 
@@ -65,6 +65,7 @@ export function CounsellingPage({ user }: CounsellingPageProps) {
 
     const expert = experts[0]; // Assign first available expert (production: show selection)
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await supabase.from("sessions").insert({
       student_id: user.id,
       expert_id: expert.user_id,
@@ -72,7 +73,7 @@ export function CounsellingPage({ user }: CounsellingPageProps) {
       scheduled_at: scheduledAt.toISOString(),
       duration_minutes: 60,
       status: "scheduled",
-    });
+    } as any);
 
     setBooking(false);
     setBookingOpen(false);

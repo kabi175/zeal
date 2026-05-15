@@ -84,12 +84,13 @@ export function RealtimeChat({ session, userId, userRole }: RealtimeChatProps) {
     const content = input.trim();
     setInput("");
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await supabase.from("messages").insert({
       session_id: session.id,
       sender_id: userId,
       sender_type: userRole as MessageSender,
       content,
-    });
+    } as any);
 
     setSending(false);
   };

@@ -67,12 +67,13 @@ export async function saveAssessment(params: {
 
   const { data: assessment, error: assessError } = await supabase
     .from("assessments")
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .insert({
       student_id: params.studentId,
       score: params.score,
       category: params.category as any,
       completed_at: new Date().toISOString(),
-    })
+    } as any)
     .select("id")
     .single();
 
@@ -86,7 +87,8 @@ export async function saveAssessment(params: {
 
   const { error: answerError } = await supabase
     .from("assessment_answers")
-    .insert(answerRows);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .insert(answerRows as any);
 
   if (answerError) throw answerError;
   return assessment.id;

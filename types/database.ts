@@ -27,10 +27,27 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["colleges"]["Row"], "id" | "created_at" | "updated_at"> & {
+        Insert: {
           id?: string;
+          name: string;
+          address?: string | null;
+          city?: string | null;
+          state?: string | null;
+          country?: string;
+          logo_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
         };
-        Update: Partial<Database["public"]["Tables"]["colleges"]["Insert"]>;
+        Update: {
+          id?: string;
+          name?: string;
+          address?: string | null;
+          city?: string | null;
+          state?: string | null;
+          country?: string;
+          logo_url?: string | null;
+          updated_at?: string;
+        };
       };
       profiles: {
         Row: {
@@ -47,8 +64,33 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["profiles"]["Row"], "created_at" | "updated_at">;
-        Update: Partial<Database["public"]["Tables"]["profiles"]["Insert"]>;
+        Insert: {
+          id: string;
+          full_name: string;
+          email: string;
+          phone?: string | null;
+          gender?: GenderType | null;
+          college_id?: string | null;
+          department?: string | null;
+          year_of_study?: number | null;
+          avatar_url?: string | null;
+          bio?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          full_name?: string;
+          email?: string;
+          phone?: string | null;
+          gender?: GenderType | null;
+          college_id?: string | null;
+          department?: string | null;
+          year_of_study?: number | null;
+          avatar_url?: string | null;
+          bio?: string | null;
+          updated_at?: string;
+        };
       };
       user_roles: {
         Row: {
@@ -57,8 +99,17 @@ export interface Database {
           role: AppRole;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["user_roles"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["user_roles"]["Insert"]>;
+        Insert: {
+          id?: string;
+          user_id: string;
+          role: AppRole;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          role?: AppRole;
+        };
       };
       experts: {
         Row: {
@@ -73,8 +124,29 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["experts"]["Row"], "id" | "created_at" | "updated_at">;
-        Update: Partial<Database["public"]["Tables"]["experts"]["Insert"]>;
+        Insert: {
+          id?: string;
+          user_id: string;
+          college_id?: string | null;
+          specialization?: string[] | null;
+          qualifications?: string | null;
+          years_experience?: number;
+          available_slots?: Json;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          college_id?: string | null;
+          specialization?: string[] | null;
+          qualifications?: string | null;
+          years_experience?: number;
+          available_slots?: Json;
+          is_active?: boolean;
+          updated_at?: string;
+        };
       };
       assessments: {
         Row: {
@@ -88,8 +160,27 @@ export interface Database {
           completed_at: string;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["assessments"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["assessments"]["Insert"]>;
+        Insert: {
+          id?: string;
+          student_id: string;
+          expert_id?: string | null;
+          score: number;
+          category: StressCategory;
+          communication_score?: number | null;
+          teamwork_score?: number | null;
+          completed_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          student_id?: string;
+          expert_id?: string | null;
+          score?: number;
+          category?: StressCategory;
+          communication_score?: number | null;
+          teamwork_score?: number | null;
+          completed_at?: string;
+        };
       };
       assessment_answers: {
         Row: {
@@ -99,8 +190,19 @@ export interface Database {
           answer_value: number;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["assessment_answers"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["assessment_answers"]["Insert"]>;
+        Insert: {
+          id?: string;
+          assessment_id: string;
+          question_id: number;
+          answer_value: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          assessment_id?: string;
+          question_id?: number;
+          answer_value?: number;
+        };
       };
       sessions: {
         Row: {
@@ -116,8 +218,31 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["sessions"]["Row"], "id" | "created_at" | "updated_at">;
-        Update: Partial<Database["public"]["Tables"]["sessions"]["Insert"]>;
+        Insert: {
+          id?: string;
+          student_id: string;
+          expert_id: string;
+          title?: string | null;
+          scheduled_at: string;
+          duration_minutes?: number;
+          status?: SessionStatus;
+          meeting_url?: string | null;
+          notes_summary?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          student_id?: string;
+          expert_id?: string;
+          title?: string | null;
+          scheduled_at?: string;
+          duration_minutes?: number;
+          status?: SessionStatus;
+          meeting_url?: string | null;
+          notes_summary?: string | null;
+          updated_at?: string;
+        };
       };
       messages: {
         Row: {
@@ -129,8 +254,23 @@ export interface Database {
           is_read: boolean;
           created_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["messages"]["Row"], "id" | "created_at">;
-        Update: Partial<Database["public"]["Tables"]["messages"]["Insert"]>;
+        Insert: {
+          id?: string;
+          session_id?: string | null;
+          sender_id?: string | null;
+          sender_type: MessageSender;
+          content: string;
+          is_read?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          session_id?: string | null;
+          sender_id?: string | null;
+          sender_type?: MessageSender;
+          content?: string;
+          is_read?: boolean;
+        };
       };
       notes: {
         Row: {
@@ -143,8 +283,25 @@ export interface Database {
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Database["public"]["Tables"]["notes"]["Row"], "id" | "created_at" | "updated_at">;
-        Update: Partial<Database["public"]["Tables"]["notes"]["Insert"]>;
+        Insert: {
+          id?: string;
+          expert_id: string;
+          student_id: string;
+          session_id?: string | null;
+          content: string;
+          is_private?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          expert_id?: string;
+          student_id?: string;
+          session_id?: string | null;
+          content?: string;
+          is_private?: boolean;
+          updated_at?: string;
+        };
       };
     };
     Functions: {

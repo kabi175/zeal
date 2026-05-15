@@ -29,23 +29,26 @@ export async function POST(req: NextRequest) {
         };
 
       let collegeId: string | null = null;
-      const { data: existing } = await supabase
+      const existingCollegeResult = await supabase
         .from("colleges")
         .select("id")
         .ilike("name", college)
         .single();
+      const existing = existingCollegeResult.data as { id: string } | null;
 
       if (existing) {
         collegeId = existing.id;
       } else {
         const { data: newCollege } = await supabase
           .from("colleges")
-          .insert({ name: college })
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .insert({ name: college } as any)
           .select("id")
           .single();
-        collegeId = newCollege?.id ?? null;
+        collegeId = (newCollege as { id: string } | null)?.id ?? null;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await supabase.from("profiles").upsert({
         id: userId,
         email,
@@ -55,12 +58,10 @@ export async function POST(req: NextRequest) {
         college_id: collegeId,
         department,
         year_of_study: yearOfStudy,
-      });
+      } as any);
 
-      await supabase.from("user_roles").upsert({
-        user_id: userId,
-        role: "student",
-      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await supabase.from("user_roles").upsert({ user_id: userId, role: "student" } as any);
     }
 
     return NextResponse.json({ received: true });

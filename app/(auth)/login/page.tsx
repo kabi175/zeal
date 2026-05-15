@@ -49,10 +49,9 @@ export default function LoginPage() {
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
-      .returns<{ role: string }[]>()
-      .single();
+      .single() as { data: { role: string } | null; error: unknown };
 
-    const role = (roleData as { role: string } | null)?.role;
+    const role = roleData?.role;
     const destination =
       role === "expert" ? "/expert/dashboard" :
       role === "admin" ? "/admin/dashboard" :
