@@ -63,17 +63,19 @@ export default function RegisterPage() {
       .from("colleges")
       .select("id")
       .ilike("name", data.college)
+      .returns<{ id: string }[]>()
       .single();
 
     if (existingCollege) {
-      collegeId = existingCollege.id;
+      collegeId = (existingCollege as { id: string }).id;
     } else {
       const { data: newCollege } = await supabase
         .from("colleges")
         .insert({ name: data.college })
         .select("id")
+        .returns<{ id: string }[]>()
         .single();
-      collegeId = newCollege?.id ?? null;
+      collegeId = (newCollege as { id: string } | null)?.id ?? null;
     }
 
     // 3. Insert profile
