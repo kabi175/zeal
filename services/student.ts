@@ -9,7 +9,7 @@ export async function getStudentAssessments(userId: string): Promise<Assessment[
     .eq("student_id", userId)
     .order("completed_at", { ascending: false });
   if (error) throw error;
-  return data ?? [];
+  return (data as Assessment[]) ?? [];
 }
 
 export async function getStudentSessions(userId: string): Promise<Session[]> {
@@ -22,7 +22,7 @@ export async function getStudentSessions(userId: string): Promise<Session[]> {
     .order("scheduled_at", { ascending: true })
     .limit(5);
   if (error) throw error;
-  return data ?? [];
+  return (data as Session[]) ?? [];
 }
 
 export async function getDashboardStats(userId: string): Promise<DashboardStats> {
@@ -46,7 +46,8 @@ export async function getDashboardStats(userId: string): Promise<DashboardStats>
     .select("id", { count: "exact" })
     .eq("student_id", userId);
 
-  const latest = assessments?.[0];
+  type AssessmentRow = { score: number; category: string; communication_score: number | null; teamwork_score: number | null; completed_at: string };
+  const latest = (assessments as AssessmentRow[] | null)?.[0];
   return {
     stressScore: latest?.score ?? null,
     communicationScore: latest?.communication_score ?? null,
@@ -78,9 +79,10 @@ export async function saveAssessment(params: {
     .single();
 
   if (assessError || !assessment) throw assessError ?? new Error("Insert failed");
+  const assessmentId = (assessment as { id: string }).id;
 
   const answerRows = Object.entries(params.answers).map(([qId, val]) => ({
-    assessment_id: assessment.id,
+    assessment_id: assessmentId,
     question_id: parseInt(qId),
     answer_value: val,
   }));
@@ -91,5 +93,5 @@ export async function saveAssessment(params: {
     .insert(answerRows as any);
 
   if (answerError) throw answerError;
-  return assessment.id;
+  return assessmentId;
 }

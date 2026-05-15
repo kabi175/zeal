@@ -1,8 +1,6 @@
 import { OpenAI } from "openai";
 import { NextRequest } from "next/server";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
 const SYSTEM_PROMPT = `You are Zeal, an AI Wellness Companion for college students in India. You are:
 - Warm, empathetic, and non-judgmental
 - Non-clinical: never diagnose or prescribe
@@ -27,6 +25,7 @@ Keep responses conversational and supportive. 2-4 paragraphs max. Use plain text
 
 export async function POST(req: NextRequest) {
   try {
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const body = await req.json();
     const { messages } = body as {
       messages: Array<{ role: "user" | "assistant"; content: string }>;

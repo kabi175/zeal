@@ -1,4 +1,6 @@
-import type { Database } from "./database";
+import type { Database, MessageSender } from "./database";
+
+export type { MessageSender };
 
 export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 export type College = Database["public"]["Tables"]["colleges"]["Row"];

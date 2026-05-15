@@ -20,7 +20,8 @@ export async function getAdminStats(): Promise<AdminStats> {
       .limit(500),
   ]);
 
-  const allAssessments = assessments ?? [];
+  type AssessmentRow = { score: number; category: string; completed_at: string; profiles: unknown };
+  const allAssessments = (assessments as AssessmentRow[] | null) ?? [];
 
   const avgStressScore = allAssessments.length
     ? Math.round(

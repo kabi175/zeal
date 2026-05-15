@@ -22,24 +22,30 @@ export async function getAssignedStudents(expertUserId: string): Promise<Student
 
   if (!sessions || sessions.length === 0) return [];
 
-  const studentIds = [...new Set(sessions.map((s) => s.student_id))];
+  const sessionRows = sessions as Array<{ student_id: string }>;
+  const studentIds = [...new Set(sessionRows.map((s) => s.student_id))];
 
   const results: StudentWithStats[] = [];
 
+  type ProfileRow = { id: string; full_name: string; email: string; department: string | null; year_of_study: number | null };
+  type AssessmentRow = { score: number; category: string };
+
   for (const studentId of studentIds) {
-    const { data: profile } = await supabase
+    const profileResult = await supabase
       .from("profiles")
       .select("id, full_name, email, department, year_of_study")
       .eq("id", studentId)
       .single();
+    const profile = profileResult.data as ProfileRow | null;
 
-    const { data: latestAssessment } = await supabase
+    const assessmentResult = await supabase
       .from("assessments")
       .select("score, category")
       .eq("student_id", studentId)
       .order("completed_at", { ascending: false })
       .limit(1)
       .single();
+    const latestAssessment = assessmentResult.data as AssessmentRow | null;
 
     const { count } = await supabase
       .from("assessments")
@@ -73,7 +79,7 @@ export async function getExpertSessions(expertUserId: string): Promise<Session[]
   return data ?? [];
 }
 
-export async function getStudentAssessmentHistory(studentId: string) {
+export async function getStudentAssessmentHistory(studentId: string): Promise<Array<{ score: number; category: string; completed_at: string }>> {
   const supabase = createClient();
   const { data } = await supabase
     .from("assessments")
@@ -81,7 +87,7 @@ export async function getStudentAssessmentHistory(studentId: string) {
     .eq("student_id", studentId)
     .order("completed_at", { ascending: true })
     .limit(10);
-  return data ?? [];
+  return (data as Array<{ score: number; category: string; completed_at: string }>) ?? [];
 }
 
 export async function saveNote(params: {

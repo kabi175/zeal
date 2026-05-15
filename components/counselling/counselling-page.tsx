@@ -36,7 +36,7 @@ export function CounsellingPage({ user }: CounsellingPageProps) {
         .select("*")
         .eq("student_id", user.id)
         .order("scheduled_at", { ascending: false });
-      return data ?? [];
+      return (data as Session[]) ?? [];
     },
   });
 
