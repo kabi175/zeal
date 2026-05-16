@@ -30,6 +30,7 @@ export function Navbar({ profile, role }: NavbarProps) {
     ? role === "expert"
       ? [
           { href: "/expert/dashboard", label: "Dashboard" },
+          { href: "/expert/profile", label: "My Profile" },
         ]
       : role === "admin"
       ? [
@@ -40,12 +41,14 @@ export function Navbar({ profile, role }: NavbarProps) {
       : [
           { href: "/dashboard", label: "Dashboard" },
           { href: "/assessment", label: "Assessment" },
+          { href: "/courses", label: "Courses" },
           { href: "/counselling", label: "Counselling" },
           { href: "/chat", label: "AI Companion" },
         ]
     : [
         { href: "/", label: "Home" },
         { href: "/about", label: "About" },
+        { href: "/tutors", label: "Find Tutors" },
         { href: "/contact", label: "Contact" },
       ];
 

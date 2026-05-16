@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import {
-  Users, Calendar, FileText, TrendingUp, Brain, Loader2,
+  Users, Calendar, FileText, TrendingUp, Brain, Loader2, BookOpen, HelpCircle,
 } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
@@ -17,6 +17,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { QuestionBank } from "./question-bank";
+import { CourseList } from "./course-list";
 import {
   getAssignedStudents,
   getExpertSessions,
@@ -127,6 +129,28 @@ export function ExpertDashboard({ user }: ExpertDashboardProps) {
         ))}
       </div>
 
+      <Tabs defaultValue="students">
+        <TabsList className="mb-6">
+          <TabsTrigger value="students">
+            <Users className="h-4 w-4 mr-1.5" /> Students
+          </TabsTrigger>
+          <TabsTrigger value="courses">
+            <BookOpen className="h-4 w-4 mr-1.5" /> Courses
+          </TabsTrigger>
+          <TabsTrigger value="questions">
+            <HelpCircle className="h-4 w-4 mr-1.5" /> Questions
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="courses">
+          <CourseList expertId={user.id} />
+        </TabsContent>
+
+        <TabsContent value="questions">
+          <QuestionBank expertId={user.id} />
+        </TabsContent>
+
+        <TabsContent value="students">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Student List */}
         <Card className="lg:col-span-1">
@@ -338,6 +362,8 @@ export function ExpertDashboard({ user }: ExpertDashboardProps) {
           </Card>
         </div>
       </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

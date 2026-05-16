@@ -11,10 +11,51 @@ export type Session = Database["public"]["Tables"]["sessions"]["Row"];
 export type Message = Database["public"]["Tables"]["messages"]["Row"];
 export type Note = Database["public"]["Tables"]["notes"]["Row"];
 export type UserRole = Database["public"]["Tables"]["user_roles"]["Row"];
+export type Course = Database["public"]["Tables"]["courses"]["Row"];
+export type Module = Database["public"]["Tables"]["modules"]["Row"];
+export type Lesson = Database["public"]["Tables"]["lessons"]["Row"];
+export type Question = Database["public"]["Tables"]["questions"]["Row"];
+export type Enrollment = Database["public"]["Tables"]["enrollments"]["Row"];
+export type LessonProgress = Database["public"]["Tables"]["lesson_progress"]["Row"];
+export type Certificate = Database["public"]["Tables"]["certificates"]["Row"];
+export type TutorReview = Database["public"]["Tables"]["tutor_reviews"]["Row"];
 
 export type AppRole = Database["public"]["Enums"]["app_role"];
 export type StressCategory = Database["public"]["Enums"]["stress_category"];
 export type SessionStatus = Database["public"]["Enums"]["session_status"];
+export type QuestionDifficulty = Database["public"]["Enums"]["question_difficulty"];
+export type LessonContentType = Database["public"]["Enums"]["lesson_content_type"];
+export type EnrollmentStatus = Database["public"]["Enums"]["enrollment_status"];
+
+export interface TutorPublicProfile {
+  id: string;
+  user_id: string;
+  full_name: string;
+  email: string;
+  avatar_url: string | null;
+  bio: string | null;
+  profile_headline: string | null;
+  profile_photo_url: string | null;
+  subjects: string[];
+  languages: string[];
+  hourly_rate: number;
+  rating: number;
+  total_reviews: number;
+  years_experience: number;
+  qualifications: string | null;
+  is_public: boolean;
+}
+
+export interface CourseWithModules extends Course {
+  modules: Array<Module & { lessons: Lesson[] }>;
+  tutor_name: string;
+  tutor_photo: string | null;
+}
+
+export interface EnrollmentWithProgress extends Enrollment {
+  completed_lessons: string[];
+  total_lessons: number;
+}
 
 export interface AuthUser {
   id: string;

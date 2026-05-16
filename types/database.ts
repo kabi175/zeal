@@ -11,6 +11,9 @@ export type GenderType = "male" | "female" | "other" | "prefer_not_to_say";
 export type SessionStatus = "scheduled" | "in_progress" | "completed" | "cancelled";
 export type StressCategory = "low" | "mild" | "moderate" | "high" | "severe";
 export type MessageSender = "student" | "expert" | "ai";
+export type QuestionDifficulty = "easy" | "medium" | "hard";
+export type LessonContentType = "video" | "text" | "quiz";
+export type EnrollmentStatus = "active" | "completed" | "dropped";
 
 export interface Database {
   public: {
@@ -121,6 +124,15 @@ export interface Database {
           years_experience: number;
           available_slots: Json;
           is_active: boolean;
+          hourly_rate: number;
+          subjects: string[];
+          languages: string[];
+          profile_headline: string | null;
+          rating: number;
+          total_reviews: number;
+          availability_json: Json;
+          profile_photo_url: string | null;
+          is_public: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -133,6 +145,15 @@ export interface Database {
           years_experience?: number;
           available_slots?: Json;
           is_active?: boolean;
+          hourly_rate?: number;
+          subjects?: string[];
+          languages?: string[];
+          profile_headline?: string | null;
+          rating?: number;
+          total_reviews?: number;
+          availability_json?: Json;
+          profile_photo_url?: string | null;
+          is_public?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -145,6 +166,15 @@ export interface Database {
           years_experience?: number;
           available_slots?: Json;
           is_active?: boolean;
+          hourly_rate?: number;
+          subjects?: string[];
+          languages?: string[];
+          profile_headline?: string | null;
+          rating?: number;
+          total_reviews?: number;
+          availability_json?: Json;
+          profile_photo_url?: string | null;
+          is_public?: boolean;
           updated_at?: string;
         };
       };
@@ -303,6 +333,262 @@ export interface Database {
           updated_at?: string;
         };
       };
+      courses: {
+        Row: {
+          id: string;
+          expert_id: string;
+          title: string;
+          description: string | null;
+          subject: string | null;
+          thumbnail_url: string | null;
+          price: number;
+          is_published: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          expert_id: string;
+          title: string;
+          description?: string | null;
+          subject?: string | null;
+          thumbnail_url?: string | null;
+          price?: number;
+          is_published?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          expert_id?: string;
+          title?: string;
+          description?: string | null;
+          subject?: string | null;
+          thumbnail_url?: string | null;
+          price?: number;
+          is_published?: boolean;
+          updated_at?: string;
+        };
+      };
+      modules: {
+        Row: {
+          id: string;
+          course_id: string;
+          title: string;
+          order_index: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          course_id: string;
+          title: string;
+          order_index?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          course_id?: string;
+          title?: string;
+          order_index?: number;
+        };
+      };
+      lessons: {
+        Row: {
+          id: string;
+          module_id: string;
+          title: string;
+          content_type: LessonContentType;
+          content_url: string | null;
+          content_body: string | null;
+          order_index: number;
+          duration_secs: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          module_id: string;
+          title: string;
+          content_type?: LessonContentType;
+          content_url?: string | null;
+          content_body?: string | null;
+          order_index?: number;
+          duration_secs?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          module_id?: string;
+          title?: string;
+          content_type?: LessonContentType;
+          content_url?: string | null;
+          content_body?: string | null;
+          order_index?: number;
+          duration_secs?: number;
+        };
+      };
+      questions: {
+        Row: {
+          id: string;
+          expert_id: string;
+          course_id: string | null;
+          topic_tag: string | null;
+          difficulty: QuestionDifficulty;
+          question_text: string;
+          option_a: string;
+          option_b: string;
+          option_c: string;
+          option_d: string;
+          correct_option: string;
+          explanation: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          expert_id: string;
+          course_id?: string | null;
+          topic_tag?: string | null;
+          difficulty?: QuestionDifficulty;
+          question_text: string;
+          option_a: string;
+          option_b: string;
+          option_c: string;
+          option_d: string;
+          correct_option: string;
+          explanation?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          expert_id?: string;
+          course_id?: string | null;
+          topic_tag?: string | null;
+          difficulty?: QuestionDifficulty;
+          question_text?: string;
+          option_a?: string;
+          option_b?: string;
+          option_c?: string;
+          option_d?: string;
+          correct_option?: string;
+          explanation?: string | null;
+          updated_at?: string;
+        };
+      };
+      lesson_questions: {
+        Row: {
+          lesson_id: string;
+          question_id: string;
+          order_index: number;
+        };
+        Insert: {
+          lesson_id: string;
+          question_id: string;
+          order_index?: number;
+        };
+        Update: {
+          lesson_id?: string;
+          question_id?: string;
+          order_index?: number;
+        };
+      };
+      enrollments: {
+        Row: {
+          id: string;
+          student_id: string;
+          course_id: string;
+          status: EnrollmentStatus;
+          enrolled_at: string;
+          completed_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          student_id: string;
+          course_id: string;
+          status?: EnrollmentStatus;
+          enrolled_at?: string;
+          completed_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          student_id?: string;
+          course_id?: string;
+          status?: EnrollmentStatus;
+          enrolled_at?: string;
+          completed_at?: string | null;
+        };
+      };
+      lesson_progress: {
+        Row: {
+          id: string;
+          student_id: string;
+          lesson_id: string;
+          completed_at: string;
+        };
+        Insert: {
+          id?: string;
+          student_id: string;
+          lesson_id: string;
+          completed_at?: string;
+        };
+        Update: {
+          id?: string;
+          student_id?: string;
+          lesson_id?: string;
+          completed_at?: string;
+        };
+      };
+      certificates: {
+        Row: {
+          id: string;
+          cert_code: string;
+          student_id: string;
+          course_id: string;
+          expert_id: string;
+          issued_at: string;
+        };
+        Insert: {
+          id?: string;
+          cert_code?: string;
+          student_id: string;
+          course_id: string;
+          expert_id: string;
+          issued_at?: string;
+        };
+        Update: {
+          id?: string;
+          cert_code?: string;
+          student_id?: string;
+          course_id?: string;
+          expert_id?: string;
+          issued_at?: string;
+        };
+      };
+      tutor_reviews: {
+        Row: {
+          id: string;
+          expert_id: string;
+          student_id: string;
+          rating: number;
+          comment: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          expert_id: string;
+          student_id: string;
+          rating: number;
+          comment?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          expert_id?: string;
+          student_id?: string;
+          rating?: number;
+          comment?: string | null;
+        };
+      };
     };
     Functions: {
       has_role: {
@@ -320,6 +606,9 @@ export interface Database {
       session_status: SessionStatus;
       stress_category: StressCategory;
       message_sender: MessageSender;
+      question_difficulty: QuestionDifficulty;
+      lesson_content_type: LessonContentType;
+      enrollment_status: EnrollmentStatus;
     };
   };
 }

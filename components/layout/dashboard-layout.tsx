@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Brain, LayoutDashboard, ClipboardList, MessageCircle,
-  Video, Users, FileText, BarChart3, Settings,
+  Video, Users, FileText, BarChart3, BookOpen, UserCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Navbar } from "./navbar";
@@ -19,12 +19,14 @@ interface NavItem {
 const STUDENT_NAV: NavItem[] = [
   { href: "/dashboard",   label: "Dashboard",   icon: <LayoutDashboard className="h-4 w-4" /> },
   { href: "/assessment",  label: "Assessment",  icon: <ClipboardList className="h-4 w-4" /> },
+  { href: "/courses",     label: "Courses",     icon: <BookOpen className="h-4 w-4" /> },
   { href: "/counselling", label: "Counselling", icon: <Video className="h-4 w-4" /> },
   { href: "/chat",        label: "AI Companion",icon: <MessageCircle className="h-4 w-4" /> },
 ];
 
 const EXPERT_NAV: NavItem[] = [
-  { href: "/expert/dashboard", label: "Dashboard", icon: <LayoutDashboard className="h-4 w-4" /> },
+  { href: "/expert/dashboard", label: "Dashboard",  icon: <LayoutDashboard className="h-4 w-4" /> },
+  { href: "/expert/profile",   label: "My Profile", icon: <UserCircle className="h-4 w-4" /> },
 ];
 
 const ADMIN_NAV: NavItem[] = [
