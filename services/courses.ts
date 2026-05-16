@@ -58,7 +58,7 @@ export async function getCourseWithModules(courseId: string): Promise<CourseWith
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, avatar_url")
+    .select("full_name")
     .eq("id", (course as Course).expert_id)
     .single();
 
@@ -73,9 +73,7 @@ export async function getCourseWithModules(courseId: string): Promise<CourseWith
     modules: modulesWithLessons,
     tutor_name: (profile as { full_name: string } | null)?.full_name ?? "Tutor",
     tutor_photo:
-      (expertRow as { profile_photo_url: string | null } | null)?.profile_photo_url ??
-      (profile as { avatar_url: string | null } | null)?.avatar_url ??
-      null,
+      (expertRow as { profile_photo_url: string | null } | null)?.profile_photo_url ?? null,
   };
 }
 

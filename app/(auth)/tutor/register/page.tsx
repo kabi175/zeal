@@ -85,7 +85,6 @@ export default function TutorRegisterPage() {
       email: data.email,
       phone: data.phone,
       gender: data.gender,
-      bio: data.bio ?? null,
     } as any);
 
     if (profileError) {

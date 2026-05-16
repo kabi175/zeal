@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 type CookieToSet = { name: string; value: string; options?: Record<string, unknown> };
 
 const PUBLIC_ROUTES = ["/", "/about", "/contact", "/login", "/register", "/tutor/register", "/tutors"];
+const PUBLIC_PREFIXES = ["/tutors/"];
 const STUDENT_ROUTES = ["/dashboard", "/assessment", "/counselling", "/chat", "/courses"];
 const EXPERT_ROUTES = ["/expert"];
 const ADMIN_ROUTES = ["/admin"];
@@ -34,9 +35,10 @@ export async function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
 
-  const isPublic = PUBLIC_ROUTES.some(
-    (r) => path === r || path.startsWith("/api/")
-  );
+  const isPublic =
+    PUBLIC_ROUTES.some((r) => path === r) ||
+    PUBLIC_PREFIXES.some((p) => path.startsWith(p)) ||
+    path.startsWith("/api/");
 
   let user = null;
   try {

@@ -17,12 +17,13 @@ const TIME_SLOTS = ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00
 
 interface CounsellingPageProps {
   user: AuthUser;
+  preselectedExpertId?: string;
 }
 
-export function CounsellingPage({ user }: CounsellingPageProps) {
+export function CounsellingPage({ user, preselectedExpertId }: CounsellingPageProps) {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(!!preselectedExpertId);
   const [activeSession, setActiveSession] = useState<Session | null>(null);
   const [booking, setBooking] = useState(false);
 
@@ -43,12 +44,22 @@ export function CounsellingPage({ user }: CounsellingPageProps) {
   const { data: experts = [] } = useQuery({
     queryKey: ["experts"],
     queryFn: async () => {
-      const { data } = await supabase
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const sb = supabase as any;
+      const { data: expertRows } = await sb
         .from("experts")
-        .select("*, profiles!user_id(*)")
+        .select("*")
         .eq("is_active", true)
         .limit(10);
-      return (data as Array<{ user_id: string; [key: string]: unknown }>) ?? [];
+      if (!expertRows?.length) return [];
+      const userIds = expertRows.map((e: any) => e.user_id);
+      const { data: profiles } = await sb
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", userIds);
+      const profileMap: Record<string, any> = {};
+      (profiles ?? []).forEach((p: any) => { profileMap[p.id] = p; });
+      return expertRows.map((e: any) => ({ ...e, profiles: profileMap[e.user_id] ?? null }));
     },
   });
 
@@ -63,17 +74,18 @@ export function CounsellingPage({ user }: CounsellingPageProps) {
     const scheduledAt = new Date(selectedDate);
     scheduledAt.setHours(h, m, 0, 0);
 
-    const expert = experts[0]; // Assign first available expert (production: show selection)
+    // Use preselected expert if available, otherwise first active expert
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const expert = (preselectedExpertId ? experts.find((e: any) => e.user_id === preselectedExpertId) : null) ?? experts[0];
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await supabase.from("sessions").insert({
+    const { error: insertError } = await supabase.from("sessions").insert({
       student_id: user.id,
       expert_id: expert.user_id,
-      title: "Counselling Session",
       scheduled_at: scheduledAt.toISOString(),
-      duration_minutes: 60,
       status: "scheduled",
     } as any);
+    if (insertError) console.error("SESSION INSERT ERROR:", insertError);
 
     setBooking(false);
     setBookingOpen(false);
@@ -252,8 +264,7 @@ function SessionCard({ session, onJoin }: { session: Session; onJoin: () => void
             </p>
             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>
               <Clock className="h-3 w-3 inline mr-1" />
-              {format(new Date(session.scheduled_at), "EEE, MMM d · h:mm a")} ·{" "}
-              {session.duration_minutes}min
+              {format(new Date(session.scheduled_at), "EEE, MMM d · h:mm a")}{(session as any).duration_minutes ? ` · ${(session as any).duration_minutes}min` : ""}
             </p>
           </div>
         </div>

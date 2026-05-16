@@ -27,24 +27,7 @@ export function Navbar({ profile, role }: NavbarProps) {
   };
 
   const navLinks = profile
-    ? role === "expert"
-      ? [
-          { href: "/expert/dashboard", label: "Dashboard" },
-          { href: "/expert/profile", label: "My Profile" },
-        ]
-      : role === "admin"
-      ? [
-          { href: "/admin/dashboard", label: "Dashboard" },
-          { href: "/admin/students", label: "Students" },
-          { href: "/admin/reports", label: "Reports" },
-        ]
-      : [
-          { href: "/dashboard", label: "Dashboard" },
-          { href: "/assessment", label: "Assessment" },
-          { href: "/courses", label: "Courses" },
-          { href: "/counselling", label: "Counselling" },
-          { href: "/chat", label: "AI Companion" },
-        ]
+    ? []
     : [
         { href: "/", label: "Home" },
         { href: "/about", label: "About" },
@@ -67,7 +50,7 @@ export function Navbar({ profile, role }: NavbarProps) {
             <Brain className="h-5 w-5 text-white" />
           </div>
           <span
-            className="text-lg font-bold"
+            className="text-lg font-bold leading-none"
             style={{ fontFamily: "var(--font-display)", color: "var(--foreground)" }}
           >
             Zeal 2 Up

@@ -6,8 +6,27 @@ create type lesson_content_type as enum ('video', 'text', 'quiz');
 create type enrollment_status as enum ('active', 'completed', 'dropped');
 
 -- ============================================================
--- EXTEND EXPERTS TABLE (tutor public profile)
+-- EXPERTS TABLE (create if not exists, then add new columns)
 -- ============================================================
+create table if not exists experts (
+  id                 uuid primary key default gen_random_uuid(),
+  user_id            uuid not null references auth.users(id) on delete cascade,
+  qualifications     text,
+  years_experience   integer default 0,
+  hourly_rate        numeric(8,2) default 0,
+  subjects           text[] default '{}',
+  languages          text[] default '{"English"}',
+  profile_headline   text,
+  rating             numeric(3,2) default 0,
+  total_reviews      integer default 0,
+  availability_json  jsonb default '{}',
+  profile_photo_url  text,
+  is_public          boolean default false,
+  is_active          boolean default true,
+  created_at         timestamptz not null default now(),
+  unique (user_id)
+);
+
 alter table experts
   add column if not exists hourly_rate        numeric(8,2)  default 0,
   add column if not exists subjects           text[]        default '{}',
@@ -19,6 +38,19 @@ alter table experts
   add column if not exists profile_photo_url  text,
   add column if not exists is_public          boolean       default false;
 
+alter table experts enable row level security;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename = 'experts' and policyname = 'Expert manages own profile') then
+    create policy "Expert manages own profile" on experts for all
+      using (user_id = auth.uid()) with check (user_id = auth.uid());
+  end if;
+  if not exists (select 1 from pg_policies where tablename = 'experts' and policyname = 'Anyone reads public experts') then
+    create policy "Anyone reads public experts" on experts for select
+      using (is_public = true);
+  end if;
+end $$;
+
 create index if not exists idx_experts_subjects on experts using gin (subjects);
 create index if not exists idx_experts_is_public on experts(is_public);
 
@@ -26,7 +58,7 @@ create index if not exists idx_experts_is_public on experts(is_public);
 -- COURSES
 -- ============================================================
 create table courses (
-  id            uuid primary key default uuid_generate_v4(),
+  id            uuid primary key default gen_random_uuid(),
   expert_id     uuid not null references auth.users(id) on delete cascade,
   title         text not null,
   description   text,
@@ -42,7 +74,7 @@ create table courses (
 -- MODULES
 -- ============================================================
 create table modules (
-  id          uuid primary key default uuid_generate_v4(),
+  id          uuid primary key default gen_random_uuid(),
   course_id   uuid not null references courses(id) on delete cascade,
   title       text not null,
   order_index integer not null default 0,
@@ -53,7 +85,7 @@ create table modules (
 -- LESSONS
 -- ============================================================
 create table lessons (
-  id              uuid primary key default uuid_generate_v4(),
+  id              uuid primary key default gen_random_uuid(),
   module_id       uuid not null references modules(id) on delete cascade,
   title           text not null,
   content_type    lesson_content_type not null default 'text',
@@ -68,7 +100,7 @@ create table lessons (
 -- QUESTIONS
 -- ============================================================
 create table questions (
-  id              uuid primary key default uuid_generate_v4(),
+  id              uuid primary key default gen_random_uuid(),
   expert_id       uuid not null references auth.users(id) on delete cascade,
   course_id       uuid references courses(id) on delete set null,
   topic_tag       text,
@@ -98,7 +130,7 @@ create table lesson_questions (
 -- ENROLLMENTS
 -- ============================================================
 create table enrollments (
-  id           uuid primary key default uuid_generate_v4(),
+  id           uuid primary key default gen_random_uuid(),
   student_id   uuid not null references auth.users(id) on delete cascade,
   course_id    uuid not null references courses(id) on delete cascade,
   status       enrollment_status not null default 'active',
@@ -111,7 +143,7 @@ create table enrollments (
 -- LESSON PROGRESS
 -- ============================================================
 create table lesson_progress (
-  id           uuid primary key default uuid_generate_v4(),
+  id           uuid primary key default gen_random_uuid(),
   student_id   uuid not null references auth.users(id) on delete cascade,
   lesson_id    uuid not null references lessons(id) on delete cascade,
   completed_at timestamptz not null default now(),
@@ -122,7 +154,7 @@ create table lesson_progress (
 -- CERTIFICATES
 -- ============================================================
 create table certificates (
-  id          uuid primary key default uuid_generate_v4(),
+  id          uuid primary key default gen_random_uuid(),
   cert_code   text not null unique default upper(substring(gen_random_uuid()::text, 1, 8)),
   student_id  uuid not null references auth.users(id) on delete cascade,
   course_id   uuid not null references courses(id) on delete cascade,
@@ -135,7 +167,7 @@ create table certificates (
 -- TUTOR REVIEWS
 -- ============================================================
 create table tutor_reviews (
-  id          uuid primary key default uuid_generate_v4(),
+  id          uuid primary key default gen_random_uuid(),
   expert_id   uuid not null references auth.users(id) on delete cascade,
   student_id  uuid not null references auth.users(id) on delete cascade,
   rating      smallint not null check (rating between 1 and 5),
@@ -161,7 +193,18 @@ create index idx_certificates_student_id on certificates(student_id);
 create index idx_tutor_reviews_expert_id on tutor_reviews(expert_id);
 
 -- ============================================================
--- UPDATED_AT TRIGGERS (reuse existing update_updated_at fn)
+-- UPDATED_AT HELPER (create if not already defined)
+-- ============================================================
+create or replace function update_updated_at()
+returns trigger language plpgsql as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+-- ============================================================
+-- UPDATED_AT TRIGGERS
 -- ============================================================
 create trigger trg_courses_updated_at
   before update on courses

@@ -22,13 +22,14 @@ export function useCourseProgress(studentId: string, courseId: string) {
   });
 }
 
-export function useEnrollMutation(studentId: string, courseId: string) {
+export function useEnrollMutation(studentId: string, courseId: string, onEnrolled?: () => void) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: () => enrollStudent(studentId, courseId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["enrollments", studentId] });
       qc.invalidateQueries({ queryKey: ["enrollment", studentId, courseId] });
+      onEnrolled?.();
     },
   });
 }
