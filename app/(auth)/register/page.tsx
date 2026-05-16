@@ -266,12 +266,20 @@ export default function RegisterPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm" style={{ color: "var(--muted-foreground)" }}>
-        Already have an account?{" "}
-        <Link href="/login" className="font-medium hover:underline" style={{ color: "var(--primary)" }}>
-          Sign in
-        </Link>
-      </p>
+      <div className="mt-6 text-center space-y-2 text-sm" style={{ color: "var(--muted-foreground)" }}>
+        <p>
+          Already have an account?{" "}
+          <Link href="/login" className="font-medium hover:underline" style={{ color: "var(--primary)" }}>
+            Sign in
+          </Link>
+        </p>
+        <p>
+          Want to teach?{" "}
+          <Link href="/tutor/register" className="font-medium hover:underline" style={{ color: "var(--primary)" }}>
+            Register as a Tutor
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }

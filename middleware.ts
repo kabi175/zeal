@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 type CookieToSet = { name: string; value: string; options?: Record<string, unknown> };
 
-const PUBLIC_ROUTES = ["/", "/about", "/contact", "/login", "/register", "/tutors"];
+const PUBLIC_ROUTES = ["/", "/about", "/contact", "/login", "/register", "/tutor/register", "/tutors"];
 const STUDENT_ROUTES = ["/dashboard", "/assessment", "/counselling", "/chat", "/courses"];
 const EXPERT_ROUTES = ["/expert"];
 const ADMIN_ROUTES = ["/admin"];

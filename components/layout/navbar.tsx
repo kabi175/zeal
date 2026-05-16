@@ -124,6 +124,9 @@ export function Navbar({ profile, role }: NavbarProps) {
               <Button variant="outline" size="sm" asChild>
                 <Link href="/login">Sign In</Link>
               </Button>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/tutor/register">Become a Tutor</Link>
+              </Button>
               <Button variant="gradient" size="sm" asChild>
                 <Link href="/register">Get Started</Link>
               </Button>
@@ -160,12 +163,17 @@ export function Navbar({ profile, role }: NavbarProps) {
             </Link>
           ))}
           {!profile && (
-            <div className="flex gap-2 pt-2">
-              <Button variant="outline" size="sm" asChild className="flex-1">
-                <Link href="/login">Sign In</Link>
-              </Button>
-              <Button variant="gradient" size="sm" asChild className="flex-1">
-                <Link href="/register">Get Started</Link>
+            <div className="flex flex-col gap-2 pt-2">
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" asChild className="flex-1">
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button variant="gradient" size="sm" asChild className="flex-1">
+                  <Link href="/register">Get Started</Link>
+                </Button>
+              </div>
+              <Button variant="outline" size="sm" asChild className="w-full">
+                <Link href="/tutor/register">Become a Tutor</Link>
               </Button>
             </div>
           )}
